@@ -481,7 +481,7 @@ class AnimeOwl extends models_1.AnimeParser {
     } catch (error) {
         throw new Error('Something went wrong. Please try again later.');
     }
-                  }
+              }
   async fetchSearchSuggestions(query) {
         try {
             const encodedQuery = encodeURIComponent(query);
