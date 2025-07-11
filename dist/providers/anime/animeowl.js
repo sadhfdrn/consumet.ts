@@ -436,39 +436,53 @@ class AnimeOwl extends models_1.AnimeParser {
         return this.scrapeCardPage(`${this.baseUrl}/genre/${genre}?page=${page}`);
     }
     async fetchSpotlight() {
-        try {
-            const res = { results: [] };
-            const { data } = await this.client.get(`${this.baseUrl}/home`);
-            const $ = (0, cheerio_1.load)(data);
-            $('.carousel-inner > .carousel-item').each((i, el) => {
-                var _a, _b, _c;
-                const card = $(el);
-                const titleElement = card.find('.slide-title');
-                const id = (_a = card.find('a.anime-play').attr('href')) === null || _a === void 0 ? void 0 : _a.split(`${this.baseUrl}/anime/`)[1];
-                const img = card.find('img.film-poster-img');
-                res.results.push({
-                    id: id,
-                    title: titleElement.text().trim(),
-                    banner: (_c = (_b = card
-                        .find('.main-bg')) === null || _b === void 0 ? void 0 : _b.css('background')) === null || _c === void 0 ? void 0 : _c.replace(/url\(["']?(.+?)["']?\)/, '$1').trim(),
-                    url: `${this.baseUrl}/anime/${id}`,
-                    type: card.find('.anime-type span').text().trim(),
-                    duration: card.find('.anime-duration span').first().text().trim(),
-                    episodes: parseInt(card.find('.anime-duration.bg-purple span').text()) || 0,
-                    description: card
-                        .find('.anime-desc')
-                        .text()
-                        .replace(/\s*\n\s*/g, ' ')
-                        .trim(),
-                });
+    try {
+        const res = { results: [] };
+        const { data } = await this.client.get(`${this.baseUrl}/home`);
+        const $ = (0, cheerio_1.load)(data);
+        
+        $('.carousel-inner > .carousel-item').each((i, el) => {
+            var _a, _b, _c;
+            const card = $(el);
+            const titleElement = card.find('.slide-title');
+            const id = (_a = card.find('a.anime-play').attr('href')) === null || _a === void 0 ? void 0 : _a.split(`${this.baseUrl}/anime/`)[1];
+            const img = card.find('img.film-poster-img');
+            
+            // Safe banner extraction
+            let banner = '';
+            try {
+                const bgElement = card.find('.main-bg');
+                const backgroundStyle = bgElement.css('background') || bgElement.css('background-image') || '';
+                if (backgroundStyle && backgroundStyle.includes('url(')) {
+                    banner = backgroundStyle.replace(/url\(["']?(.+?)["']?\).*/, '$1').trim();
+                }
+            } catch (bannerError) {
+                // If banner extraction fails, use a fallback or empty string
+                banner = '';
+            }
+            
+            res.results.push({
+                id: id,
+                title: titleElement.text().trim(),
+                banner: banner,
+                url: `${this.baseUrl}/anime/${id}`,
+                type: card.find('.anime-type span').text().trim(),
+                duration: card.find('.anime-duration span').first().text().trim(),
+                episodes: parseInt(card.find('.anime-duration.bg-purple span').text()) || 0,
+                description: card
+                    .find('.anime-desc')
+                    .text()
+                    .replace(/\s*\n\s*/g, ' ')
+                    .trim(),
             });
-            return res;
-        }
-        catch (error) {
-            throw new Error('Something went wrong. Please try again later.');
-        }
+        });
+        
+        return res;
+    } catch (error) {
+        throw new Error('Something went wrong. Please try again later.');
     }
-    async fetchSearchSuggestions(query) {
+                  }
+  async fetchSearchSuggestions(query) {
         try {
             const encodedQuery = encodeURIComponent(query);
             const { data } = await this.client.get(`${this.apiUrl}/live-search/${encodedQuery}`);
