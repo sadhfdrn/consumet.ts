@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cheerio_1 = require("cheerio");
 const models_1 = require("../../models");
 const utils_1 = require("../../utils");
+
 class AnimeOwl extends models_1.AnimeParser {
     constructor(customBaseURL) {
         super(...arguments);
@@ -11,6 +12,7 @@ class AnimeOwl extends models_1.AnimeParser {
         this.apiUrl = 'https://animeowl.me/api';
         this.logo = 'https://animeowl.me/images/favicon-96x96.png';
         this.classPath = 'ANIME.AnimeOwl';
+        
         /**
          * @param query Search query
          * @param page Page number (optional)
@@ -59,6 +61,7 @@ class AnimeOwl extends models_1.AnimeParser {
             }));
             return res;
         };
+        
         /**
          * @param id Anime id
          */
@@ -99,11 +102,11 @@ class AnimeOwl extends models_1.AnimeParser {
                 $('div.genre')
                     .find('a')
                     .each(function () {
-                    var _a;
-                    const genre = $(this).text().trim();
-                    if (genre != undefined)
-                        (_a = info.genres) === null || _a === void 0 ? void 0 : _a.push(genre);
-                });
+                        var _a;
+                        const genre = $(this).text().trim();
+                        if (genre != undefined)
+                            (_a = info.genres) === null || _a === void 0 ? void 0 : _a.push(genre);
+                    });
                 switch ($('div.status > span').text().trim()) {
                     case 'Finished Airing':
                         info.status = models_1.MediaStatus.COMPLETED;
@@ -172,6 +175,7 @@ class AnimeOwl extends models_1.AnimeParser {
                 throw new Error(err.message);
             }
         };
+        
         /**
          *
          * @param episodeId Episode id
@@ -208,6 +212,7 @@ class AnimeOwl extends models_1.AnimeParser {
                 throw err;
             }
         };
+        
         /**
          * @param url string
          */
@@ -246,6 +251,7 @@ class AnimeOwl extends models_1.AnimeParser {
                 throw new Error('Something went wrong. Please try again later.');
             }
         };
+        
         /**
          * @param $ cheerio instance
          */
@@ -275,6 +281,7 @@ class AnimeOwl extends models_1.AnimeParser {
                 throw new Error('Something went wrong. Please try again later.');
             }
         };
+        
         /**
          * @param episodeId Episode id
          * @param subOrDub sub or dub (default `sub`) (optional)
@@ -309,31 +316,33 @@ class AnimeOwl extends models_1.AnimeParser {
             });
             return servers;
         };
+        
         this.parseEpisodes = ($, selector, subOrDub) => {
             return $(selector)
                 .map((idx, el) => {
-                var _a, _b, _c;
-                const $el = $(el);
-                const title = (_a = $el.attr('title')) !== null && _a !== void 0 ? _a : '';
-                const id = (_b = $el.attr('id')) !== null && _b !== void 0 ? _b : '';
-                const url = ((_c = $el.attr('href')) === null || _c === void 0 ? void 0 : _c.startsWith('http')) ? $el.attr('href') : $el.prop('href');
-                const episodeNumber = Number(title);
-                // Skip if the episode number is a float
-                if (!Number.isInteger(episodeNumber)) {
-                    return null;
-                }
-                return {
-                    id: id,
-                    number: parseInt(title),
-                    title: `Ep-${title}`,
-                    url: url || '',
-                    isSubbed: subOrDub === models_1.SubOrSub.SUB,
-                    isDubbed: subOrDub === models_1.SubOrSub.DUB,
-                };
-            })
+                    var _a, _b, _c;
+                    const $el = $(el);
+                    const title = (_a = $el.attr('title')) !== null && _a !== void 0 ? _a : '';
+                    const id = (_b = $el.attr('id')) !== null && _b !== void 0 ? _b : '';
+                    const url = ((_c = $el.attr('href')) === null || _c === void 0 ? void 0 : _c.startsWith('http')) ? $el.attr('href') : $el.prop('href');
+                    const episodeNumber = Number(title);
+                    // Skip if the episode number is a float
+                    if (!Number.isInteger(episodeNumber)) {
+                        return null;
+                    }
+                    return {
+                        id: id,
+                        number: parseInt(title),
+                        title: `Ep-${title}`,
+                        url: url || '',
+                        isSubbed: subOrDub === models_1.SubOrSub.SUB,
+                        isDubbed: subOrDub === models_1.SubOrSub.DUB,
+                    };
+                })
                 .get()
                 .filter(Boolean);
         };
+        
         if (customBaseURL) {
             if (customBaseURL.startsWith('http://') || customBaseURL.startsWith('https://')) {
                 this.baseUrl = customBaseURL;
@@ -346,6 +355,7 @@ class AnimeOwl extends models_1.AnimeParser {
             this.baseUrl = this.baseUrl;
         }
     }
+    
     /**
      * @param page number
      */
@@ -355,6 +365,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/trending?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -364,6 +375,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/recent-episode/sub?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -373,6 +385,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/type/movie?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -382,6 +395,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/type/tv?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -391,6 +405,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/type/ova?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -400,6 +415,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/type/ona?page=${page}`);
     }
+    
     /**
      * @param page number
      */
@@ -409,6 +425,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/type/special?page=${page}`);
     }
+    
     async fetchGenres() {
         try {
             const res = [];
@@ -423,6 +440,7 @@ class AnimeOwl extends models_1.AnimeParser {
             throw new Error('Something went wrong. Please try again later.');
         }
     }
+    
     /**
      * @param page number
      */
@@ -435,54 +453,56 @@ class AnimeOwl extends models_1.AnimeParser {
         }
         return this.scrapeCardPage(`${this.baseUrl}/genre/${genre}?page=${page}`);
     }
+    
     async fetchSpotlight() {
-    try {
-        const res = { results: [] };
-        const { data } = await this.client.get(`${this.baseUrl}/home`);
-        const $ = (0, cheerio_1.load)(data);
-        
-        $('.carousel-inner > .carousel-item').each((i, el) => {
-            var _a, _b, _c;
-            const card = $(el);
-            const titleElement = card.find('.slide-title');
-            const id = (_a = card.find('a.anime-play').attr('href')) === null || _a === void 0 ? void 0 : _a.split(`${this.baseUrl}/anime/`)[1];
-            const img = card.find('img.film-poster-img');
+        try {
+            const res = { results: [] };
+            const { data } = await this.client.get(`${this.baseUrl}/home`);
+            const $ = (0, cheerio_1.load)(data);
             
-            // Safe banner extraction
-            let banner = '';
-            try {
-                const bgElement = card.find('.main-bg');
-                const backgroundStyle = bgElement.css('background') || bgElement.css('background-image') || '';
-                if (backgroundStyle && backgroundStyle.includes('url(')) {
-                    banner = backgroundStyle.replace(/url\(["']?(.+?)["']?\).*/, '$1').trim();
+            $('.carousel-inner > .carousel-item').each((i, el) => {
+                var _a, _b, _c;
+                const card = $(el);
+                const titleElement = card.find('.slide-title');
+                const id = (_a = card.find('a.anime-play').attr('href')) === null || _a === void 0 ? void 0 : _a.split(`${this.baseUrl}/anime/`)[1];
+                const img = card.find('img.film-poster-img');
+                
+                // Safe banner extraction
+                let banner = '';
+                try {
+                    const bgElement = card.find('.main-bg');
+                    const backgroundStyle = bgElement.css('background') || bgElement.css('background-image') || '';
+                    if (backgroundStyle && backgroundStyle.includes('url(')) {
+                        banner = backgroundStyle.replace(/url\(["']?(.+?)["']?\).*/, '$1').trim();
+                    }
+                } catch (bannerError) {
+                    // If banner extraction fails, use a fallback or empty string
+                    banner = '';
                 }
-            } catch (bannerError) {
-                // If banner extraction fails, use a fallback or empty string
-                banner = '';
-            }
-            
-            res.results.push({
-                id: id,
-                title: titleElement.text().trim(),
-                banner: banner,
-                url: `${this.baseUrl}/anime/${id}`,
-                type: card.find('.anime-type span').text().trim(),
-                duration: card.find('.anime-duration span').first().text().trim(),
-                episodes: parseInt(card.find('.anime-duration.bg-purple span').text()) || 0,
-                description: card
-                    .find('.anime-desc')
-                    .text()
-                    .replace(/\s*\n\s*/g, ' ')
-                    .trim(),
+                
+                res.results.push({
+                    id: id,
+                    title: titleElement.text().trim(),
+                    banner: banner,
+                    url: `${this.baseUrl}/anime/${id}`,
+                    type: card.find('.anime-type span').text().trim(),
+                    duration: card.find('.anime-duration span').first().text().trim(),
+                    episodes: parseInt(card.find('.anime-duration.bg-purple span').text()) || 0,
+                    description: card
+                        .find('.anime-desc')
+                        .text()
+                        .replace(/\s*\n\s*/g, ' ')
+                        .trim(),
+                });
             });
-        });
-        
-        return res;
-    } catch (error) {
-        throw new Error('Something went wrong. Please try again later.');
+            
+            return res;
+        } catch (error) {
+            throw new Error('Something went wrong. Please try again later.');
+        }
     }
-              }
-  async fetchSearchSuggestions(query) {
+    
+    async fetchSearchSuggestions(query) {
         try {
             const encodedQuery = encodeURIComponent(query);
             const { data } = await this.client.get(`${this.apiUrl}/live-search/${encodedQuery}`);
@@ -506,6 +526,7 @@ class AnimeOwl extends models_1.AnimeParser {
         }
     }
 }
+
 (async () => {
     const animeowl = new AnimeOwl();
     const search = await animeowl.fetchSpotlight();
@@ -513,5 +534,6 @@ class AnimeOwl extends models_1.AnimeParser {
     // const sources = await animeowl.fetchEpisodeSources(info.episodes![0].id,StreamingServers.Luffy, SubOrSub.DUB);
     // console.log(info);
 })();
+
 exports.default = AnimeOwl;
 //# sourceMappingURL=animeowl.js.map
